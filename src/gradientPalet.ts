@@ -11,6 +11,7 @@ export class GradientPalet {
     private padding: number = 10;
     private _clickCount: number = 0;
     private _selectedMax: number = 3;
+    private colorMode: string = 'hex';
 
     constructor() {
         for (let i = 0; i < this.satN; i++) {
@@ -35,8 +36,36 @@ export class GradientPalet {
             .attr('class', 'sat-circle');
     }
 
+    public changeColorMode(mode: string) {
+        this.colorMode = mode;
+        let hsb = chroma(String($('#color0').attr('name'))).hsv();
+        $('#color0').text(this.colorText(hsb[0], hsb[1], hsb[2]));
+        hsb = chroma(String($('#color1').attr('name'))).hsv();
+        $('#color1').text(this.colorText(hsb[0], hsb[1], hsb[2]));
+        hsb = chroma(String($('#color2').attr('name'))).hsv();
+        $('#color2').text(this.colorText(hsb[0], hsb[1], hsb[2]));
+    }
+
+    private colorText(h: number, s: number, b: number): string {
+        let color = chroma.hsv(h, s, b);
+
+        if (this.colorMode === 'hex') {
+            return color.hex();
+        } else if (this.colorMode === 'rgb') {
+            let rgb = color.rgb();
+            return `(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+        } else if (this.colorMode === 'hsv') {
+            s = Math.round(s * 100) / 100;
+            b = Math.round(b * 100) / 100;
+            return `(${h}, ${s}, ${b})`;
+        }
+        return '';
+    }
+
     public draw(hue: number, x: number, y: number) {
         const color2id = (code: string) => code.replace('#', 'HEX');
+
+        var tooltip = d3.select("body").append("div").attr("class", "tooltip");
 
         d3.select('#gradient-palet')
             .attr('transform-origin', `${x}px ${y}px`)
@@ -50,26 +79,44 @@ export class GradientPalet {
             .style('fill', (d: any) => chroma.hsv(hue, d.sat, d.bri).hex())
             .on('click', (e: Event, d: any) => {
                 let color: string = chroma.hsv(hue, d.sat, d.bri).hex();
-                console.log(d.sat, d.bri)
 
                 if (this._clickCount < this._selectedMax) {
                     $(`#color${this._clickCount}`)
                         .css({
                             'background': color,
-                            'color': d.sat < 0.4 && d.bri > 0.3 ? '#222' : '#EEE'
+                            'color': d.bri > 0.5 ? '#222' : '#EEE'
                         })
-                        .text(color);
+                        .text(this.colorText(hue, d.sat, d.bri))
+                        .attr('name', color);
                 }
                 this._clickCount++;
 
-                if (this._clickCount >= this._selectedMax) {
+                if (this._clickCount === 2) {
+                    hue += 180;
+                    d3.select('#hue-palet').attr('transform', `rotate(${240 - hue})`);
+                    d3.select('#gradient-palet')
+                        .selectAll('circle')
+                        .data(this._posList)
+                        .style('fill', (d: any) => chroma.hsv(hue, d.sat, d.bri).hex());
+                }
+                else if (this._clickCount >= this._selectedMax) {
                     this.resetSelectedColor();
                 }
+            })
+            .on('mouseover', (e: any, d: any) => {
+                tooltip
+                    .text(this.colorText(hue, d.sat, d.bri))
+                    .style("top", (e.pageY - 20) + "px")
+                    .style("left", (e.pageX + 10) + "px")
+                    .style("visibility", "visible");
+            })
+            .on('mouseout', () => {
+                tooltip.style("visibility", "hidden");
             });
     }
 
     public resetSelectedColor() {
         this._clickCount = 0;
-        
+
     }
 }

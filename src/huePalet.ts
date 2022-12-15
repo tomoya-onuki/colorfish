@@ -13,6 +13,8 @@ export class HuePalet {
     private satX: number;
     private satY: number;
 
+    private initHue = 240;
+
     constructor(cx: number, cy: number) {
         let sat = 1.0;
         let bri = 1.0;
@@ -24,8 +26,10 @@ export class HuePalet {
         this.satY = this.cy;
 
 
-        for (let hue = 0; hue< 360; hue += hueStep) {
-            let rad = hue / 180 * Math.PI;
+        for (let i = 0; i < 360; i += hueStep) {
+            let hue = this.initHue + i;
+            if (hue > 360) hue -= 360;
+            let rad = i / 180 * Math.PI;
             let x = this.cx + Math.cos(rad) * radius;
             let y = this.cy + Math.sin(rad) * radius;
             this._posList.push({
@@ -59,14 +63,18 @@ export class HuePalet {
             .attr('r', radius)
             .style('fill', (d: any) => d.color)
             .on('click', (e: Event, d: any) => {
-                d3.select('#hue-palet').attr('transform', `rotate(-${d.hue})`)
+                d3.select('#hue-palet').attr('transform', `rotate(${this.initHue - d.hue})`)
                 this.gradientPalet.draw(d.hue, this.satX, this.satY);
             })
 
-        this.gradientPalet.draw(0, this.satX, this.satY);
+        this.gradientPalet.draw(this.initHue, this.satX, this.satY);
     }
 
     public resetSelectedColor() {
         this.gradientPalet.resetSelectedColor();
+    }
+
+    public changeColorMode(mode: string) {
+        this.gradientPalet.changeColorMode(mode);
     }
 } 
