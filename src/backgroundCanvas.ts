@@ -40,6 +40,22 @@ export class BackgroundCanvas {
         }
     }
 
+    public resize(w: number, h:number) {
+        this.w = w * devicePixelRatio;
+        this.h = h * devicePixelRatio;
+        this.cvs.width = this.w;
+        this.cvs.height = this.h;
+        this.cvs.style.width = this.w / devicePixelRatio + 'px';
+        this.cvs.style.height = this.h / devicePixelRatio + 'px';
+
+        this.ctx.clearRect(0, 0, this.w, this.h);
+        this.colorFisList.forEach(fish => {
+            fish.draw(this.ctx);
+            fish.w = w;
+            fish.h = h;
+        })
+    }
+
     public render(fps: number) {
         setInterval(() => {
             this.ctx.clearRect(0, 0, this.w, this.h);
@@ -62,6 +78,7 @@ export class BackgroundCanvas {
             b.y -= b.speed;
             if (b.y < 0) {
                 b.y = this.h;
+                b.x = Math.random() * this.w;
             }
         });
     }

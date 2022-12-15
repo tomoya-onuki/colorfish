@@ -40,5 +40,10 @@ export class Main {
         $('#hsv').on('input', function () {
             changeColorMode($(this));
         });
+        $(window).on('resize', function () {
+            let w = Number($(window).width());
+            let h = Number($(window).height());
+            bgCvs.resize(w, h);
+        });
     }
 }

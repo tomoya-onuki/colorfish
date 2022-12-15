@@ -3,9 +3,9 @@ import chroma from 'chroma-js';
 export class ColorFish {
     private x: number;
     private y: number;
-    private w: number;
-    private h: number;
-    private hue: number;
+    private _w: number;
+    private _h: number;
+    private _hue: number;
     private theta: number = 10;
     private speed: number;
     private buffer: number = 100;
@@ -14,11 +14,18 @@ export class ColorFish {
         this.x = Math.random() * w;
         this.y = Math.random() * h;
 
-        this.w = w;
-        this.h = h;
+        this._w = w;
+        this._h = h;
 
-        this.hue = Math.random() * 360;
+        this._hue = Math.random() * 360;
         this.speed = Math.random() * 3 + 2;
+    }
+
+    set w(newW: number) {
+        this._w = newW;
+    }
+    set h(newH: number) {
+        this._h = newH;
     }
 
     public draw(ctx: CanvasRenderingContext2D) {
@@ -28,14 +35,14 @@ export class ColorFish {
         let m = 3;
 
         ctx.save()
-        ctx.translate(this.x, this.y + Math.sin(this.hue / 180 * Math.PI) * 5);
+        ctx.translate(this.x, this.y + Math.sin(this._hue / 180 * Math.PI) * 5);
         ctx.rotate(-Math.PI / 4);
         for (let i = 0; i < 360; i += 30) {
             let rad = (i + 45) / 180 * Math.PI;
             let x = Math.cos(rad) * radius;
             let y = Math.sin(rad) * radius;
 
-            let h = this.hue + i;
+            let h = this._hue + i;
             if (h > 360) h -= 360;
             ctx.fillStyle = chroma.hsv(h, 1.0, 1.0).name();
             ctx.beginPath();
@@ -51,7 +58,7 @@ export class ColorFish {
                 let y = j * (r * 2 + m);
                 let sat = 1 - i / (7 - 1);
                 let bri = 1 - j / (7 - 1);
-                ctx.fillStyle = chroma.hsv(this.hue, sat, bri).name();
+                ctx.fillStyle = chroma.hsv(this._hue, sat, bri).name();
 
                 ctx.beginPath();
                 ctx.ellipse(x - r, y - r, r * 2, r * 2, 0, 0, 2 * Math.PI);
@@ -63,13 +70,13 @@ export class ColorFish {
 
 
         this.x += this.speed;
-        if (this.x > this.w + this.buffer) {
+        if (this.x > this._w + this.buffer) {
             this.x = 0 - this.buffer;
         }
 
-        this.hue += this.theta;
-        if (this.hue > 360) {
-            this.hue = 0;
+        this._hue += this.theta;
+        if (this._hue > 360) {
+            this._hue = 0;
         }
     }
 }
