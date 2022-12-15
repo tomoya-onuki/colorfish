@@ -14,10 +14,10 @@ export class GradientPalet {
     private colorMode: string = 'hex';
 
     constructor() {
-        for (let i = 0; i < this.satN; i++) {
-            for (let j = 0; j < this.briN; j++) {
-                let sat = 1 - i / (this.satN - 1);
-                let bri = 1 - j / (this.briN - 1);
+        for (let i = 0; i < this.briN; i++) {
+            for (let j = 0; j < this.satN; j++) {
+                let bri = 1 - i / (this.briN - 1);
+                let sat = 1 - j / (this.satN - 1);
                 this._posList.push({
                     x: i * (this.radius * 2 + this.padding),
                     y: j * (this.radius * 2 + this.padding),

@@ -56,8 +56,8 @@ export class ColorFish {
             for (let j = 0; j < 7; j++) {
                 let x = i * (r * 2 + m);
                 let y = j * (r * 2 + m);
-                let sat = 1 - i / (7 - 1);
-                let bri = 1 - j / (7 - 1);
+                let sat = 1 - j / (7 - 1);
+                let bri = 1 - i / (7 - 1);
                 ctx.fillStyle = chroma.hsv(this._hue, sat, bri).name();
 
                 ctx.beginPath();
